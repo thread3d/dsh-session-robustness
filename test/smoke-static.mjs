@@ -403,4 +403,12 @@ check('official attempt 2 still owned by official', r2 && r2.from === 'official'
 check('after official budget, plugin retries', r3 && r3.kind === 'retry' && r3.from !== 'official', JSON.stringify(r3));
 
 console.log(failures === 0 ? '\nsmoke: ALL GREEN' : `\nsmoke: ${failures} FAILED`);
-process.exit(failures === 0 ? 0 : 1);
+
+// Export for testability while keeping CLI behavior
+const testResult = { success: failures === 0, failures };
+if (import.meta.url === `file://${process.argv[1]}`) {
+  // Direct execution: exit with appropriate code
+  process.exit(failures === 0 ? 0 : 1);
+}
+
+export { testResult };
