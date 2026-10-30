@@ -404,11 +404,12 @@ check('after official budget, plugin retries', r3 && r3.kind === 'retry' && r3.f
 
 console.log(failures === 0 ? '\nsmoke: ALL GREEN' : `\nsmoke: ${failures} FAILED`);
 
-// Export for testability while keeping CLI behavior
+// Export for testability
 const testResult = { success: failures === 0, failures };
+
+// Set exit code without calling process.exit() for testability
 if (import.meta.url === `file://${process.argv[1]}`) {
-  // Direct execution: exit with appropriate code
-  process.exit(failures === 0 ? 0 : 1);
+  process.exitCode = failures === 0 ? 0 : 1;
 }
 
 export { testResult };
