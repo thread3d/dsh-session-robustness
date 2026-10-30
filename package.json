@@ -1,7 +1,7 @@
 {
   "name": "dsh-session-robustness",
   "version": "0.1.6",
-  "description": "工程级会话鲁棒：官方有限次 API 重试耗尽后，对超时/传输/限流等瞬时失败继续重试直到成功或取消，会话不因瞬时 API 故障中断。",
+  "description": "Production-grade session robustness: After official limited API retries are exhausted, continue retrying transient failures like timeouts/transport/rate limits until success or cancellation, preventing temporary API issues from interrupting the session.",
   "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/bainianlaoyao/dsh-session-robustness#readme",
