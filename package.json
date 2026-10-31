@@ -26,7 +26,14 @@
   },
   "scripts": {
     "test": "node test/smoke-static.mjs",
+    "test:runner": "node --test test/smoke-static.mjs",
     "pack:check": "node scripts/check-pack.mjs"
+  },
+  "test": {
+    "files": [
+      "test/**/*.mjs",
+      "test/**/*.js"
+    ]
   },
   "dsh": {
     "bundle": {
