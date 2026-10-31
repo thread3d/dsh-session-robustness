@@ -17,4 +17,5 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm ci
+      - run: npm audit
       - run: npm test
