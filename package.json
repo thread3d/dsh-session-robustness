@@ -27,6 +27,7 @@
   "scripts": {
     "test": "node test/smoke-static.mjs",
     "test:runner": "node --test test/smoke-static.mjs",
+    "test:coverage": "c8 --reporter=text --reporter=lcov node test/smoke-static.mjs",
     "pack:check": "node scripts/check-pack.mjs"
   },
   "test": {
@@ -70,6 +71,21 @@
     "LICENSE"
   ],
   "devDependencies": {
-    "@deepseek-ai/schemastery": "^3.18.2"
+    "@deepseek-ai/schemastery": "^3.18.2",
+    "c8": "^10.1.3"
+  },
+  "c8": {
+    "reporter": [
+      "text",
+      "lcov"
+    ],
+    "exclude": [
+      "test/",
+      ".codewise/"
+    ],
+    "lines": 80,
+    "functions": 80,
+    "branches": 70,
+    "statements": 80
   }
 }
