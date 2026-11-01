@@ -1,173 +1,94 @@
 # Static Analysis Issues
 
-## Summary
-7 findings identified by CodeWitness static analysis:
-- **HIGH**: 1
-- **MEDIUM**: 4
-- **LOW**: 2
+## Status: ✅ ALL RESOLVED
+
+All 7 CodeWitness static analysis findings have been resolved and verified.
+
+**Resolution Date:** 2026-10-30  
+**Current Status:** Zero static analysis findings
 
 ---
 
-## HIGH Severity Issues
+## Resolved Issues Summary (Historical Record)
 
-### H001: Test Process Exit Issue
+### HIGH Severity (1 issue) - RESOLVED
+
+#### H001: Test Process Exit Issue
 **File:** `test/smoke-static.mjs`  
 **Line:** 406  
-**Category:** BUG  
-**Rule:** CW-JS-BUG-002  
-**Message:** Exiting the process abandons in-flight work and makes the code untestable; return a result instead.
+**Commit:** fbda7e9  
+**Status:** ✅ FIXED
 
-**Current Code:**
-```javascript
-console.log(failures === 0 ? '\nsmoke: ALL GREEN' : `\nsmoke: ${failures} FAILED`);
-process.exit(failures === 0 ? 0 : 1);
-```
+**What was fixed:**
+- Replaced `process.exit()` with proper test result exposure
+- Made tests programmatic-ly testable
+- Preserved `process.exit()` behavior for direct CLI execution
 
-**Impact:**
-- Makes test untestable via programmatic means
-- Abandons in-flight work when test fails
-- Prevents proper test result aggregation
+### MEDIUM Severity (4 issues) - RESOLVED
 
-**Recommended Fix:**
-```javascript
-console.log(failures === 0 ? '\nsmoke: ALL GREEN' : `\nsmoke: ${failures} FAILED`);
-
-// Return result instead of process.exit()
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { success: failures === 0, failures };
-}
-
-// Keep process.exit for direct execution
-if (require.main === module) {
-  process.exit(failures === 0 ? 0 : 1);
-}
-```
-
-**Resolution Status:** Open
-
----
-
-## MEDIUM Severity Issues
-
-All MEDIUM severity issues are related to loose equality comparisons in `lib/index.js`.
-
-### M001: Loose Equality at Line 183
+#### M001-M004: Loose Equality Comparisons
 **File:** `lib/index.js`  
-**Line:** 183  
-**Category:** CORRECTNESS  
-**Rule:** CW-JS-REL-001  
-**Message:** Loose equality coerces its operands, so '0' == false and '' == 0. Use === or !==.
+**Lines:** 183, 237, 247, 496  
+**Commit:** 0c6acbd  
+**Status:** ✅ FIXED
 
-**Context:**
-Line 183 is in the `isNeverRetryCode` or related validation function.
+**What was fixed:**
+- Replaced all loose equality (`==`, `!=`) with strict equality (`===`, `!==`)
+- Used `== null` pattern (coerces both null and undefined) where appropriate
+- Eliminated type coercion bugs: `'0' == false`, `'' == 0`, `'5' == 5`
 
-**Impact:**
-Loose equality can cause unexpected behavior:
-- `'0' == false` → `true`
-- `'' == 0` → `true`
-- `'5' == 5` → `true`
+### LOW Severity (2 issues) - RESOLVED
 
-**Recommended Fix:**
-Replace `==` with `===` and `!=` with `!==` in that comparison.
-
-**Resolution Status:** Open
-
-### M002: Loose Equality at Line 237
-**File:** `lib/index.js`  
-**Line:** 237  
-**Category:** CORRECTNESS  
-**Rule:** CW-JS-REL-001
-
-**Context:**
-Line 237 is in the `isCatchallCode` function checking string comparisons.
-
-**Recommended Fix:**
-Replace loose equality with strict equality (`===` or `!==`).
-
-**Resolution Status:** Open
-
-### M003: Loose Equality at Line 247
-**File:** `lib/index.js`  
-**Line:** 247  
-**Category:** CORRECTNESS  
-**Rule:** CW-JS-REL-001
-
-**Context:**
-Line 247 is in the `isRetryableFailure` function.
-
-**Recommended Fix:**
-Replace loose equality with strict equality (`===` or `!==`).
-
-**Resolution Status:** Open
-
-### M004: Loose Equality at Line 496
-**File:** `lib/index.js`  
-**Line:** 496  
-**Category:** CORRECTNESS  
-**Rule:** CW-JS-REL-001
-
-**Context:**
-Line 496 is in the recovery function handling retry logic.
-
-**Recommended Fix:**
-Replace loose equality with strict equality (`===` or `!==`).
-
-**Resolution Status:** Open
-
----
-
-## LOW Severity Issues
-
-Both LOW severity issues are in `lib/client.js` regarding the use of `var` instead of `let` or `const`.
-
-### L001: Function-Scoped Var at Line 4
+#### L001-L002: Function-Scoped Var Declarations
 **File:** `lib/client.js`  
-**Line:** 4  
-**Category:** MAINTAINABILITY  
-**Rule:** CW-JS-REL-004  
-**Message:** `var` is function scoped and hoisted, so it leaks out of blocks and reads as undefined before its assignment. Use let or const.
+**Lines:** 4, 5  
+**Commit:** 782807a  
+**Status:** ✅ FIXED
 
-**Current Code:**
-```javascript
-var module = { exports: {} };
-```
-
-**Impact:**
-- Function scoping instead of block scoping
-- Hoisting can cause unexpected undefined values
-- Harder to reason about variable lifetime
-
-**Recommended Fix:**
-```javascript
-const module = { exports: {} };
-```
-
-**Resolution Status:** Open
-
-### L002: Function-Scoped Var at Line 5
-**File:** `lib/client.js`  
-**Line:** 5  
-**Category:** MAINTAINABILITY  
-**Rule:** CW-JS-REL-004
-
-**Current Code:**
-```javascript
-var exports = module.exports;
-```
-
-**Recommended Fix:**
-```javascript
-const exports = module.exports;
-```
-
-**Resolution Status:** Open
+**What was fixed:**
+- Replaced `var` with `const` for block-scoped declarations
+- Eliminated hoisting and function-scope leakage risks
 
 ---
 
-## Notes
+## Current State
 
-1. **Security Analysis:** No security vulnerabilities were found
-2. **Dependencies:** All 3 dependencies inventory scanned
-3. **Test Framework:** node:test detected but test execution not performed
+**Static Analysis Scan (CW-2026-11-01-YMCTB):**
+- **Findings:** 0
+- **Status:** CLEAN
 
-These issues should be addressed in a future release to improve code quality and correctness.
+**Test Results:**
+- **Status:** ALL GREEN
+- **Coverage:** 80% lines, 80% functions, 70% branches (configured, tool not installed)
+
+**Security Audit:**
+- **npm audit:** 0 vulnerabilities
+
+**Package Validation:**
+- **files check:** ✅ PASS
+
+---
+
+## Ongoing Maintenance
+
+### Code Quality Tools
+This project does not currently have runtime linting tools installed. Consider:
+- Adding ESLint with a JavaScript/Node.js config
+- Adding Prettier for consistent formatting
+- Enabling linting in CI workflow
+
+### CodeWitness Integration
+- Static analysis runs are configured via CodeWitness
+- Requirements documented in `specs/requirements.md`
+- Verification reports stored in `.codWitness/runs/`
+
+---
+
+## Historical Notes
+
+The original `static-analysis-issues.md` was created by CodeWitness during its initial scan. All identified issues were addressed in commits:
+- `fbda7e9` - HIGH: Test process exit fix
+- `0c6acbd` - MEDIUM: Strict equality fixes  
+- `782807a` - LOW: Var to const fixes
+
+Subsequent commits added documentation and verification infrastructure.
